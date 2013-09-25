@@ -17,7 +17,7 @@ class TralalaBot(irc.IRCClient):
         print "Joined %s." % (channel,)
 
     def privmsg(self, user, channel, msg):
-        print msg
+        print "%s: %s" % (user, msg,)
 
 
 class TralalaBotFactory(protocol.ClientFactory):
