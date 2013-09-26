@@ -4,8 +4,6 @@ from twisted.words.protocols import irc
 from twisted.internet import protocol
 
 
-
-
 class TralalaBot(irc.IRCClient):
     def _get_nickname(self):
         return self.factory.nickname
@@ -23,6 +21,10 @@ class TralalaBot(irc.IRCClient):
         print "%s: %s" % (user, msg,)
         if msg == "teststring123":
              self.msg(channel, "teststring456")
+        elif (user.split('!')[0] == "chke") and (channel == self.nickname) and (msg == "opmefaggot"):
+            print "%s %s requested OP: granted" % ((user.split('!')[0]), channel,)
+            self.mode(self.factory.channel, True, "o", None, "chke")
+           # self.msg((user.split('!')[0]), "testanswer")
 
 
 class TralalaBotFactory(protocol.ClientFactory):
@@ -49,5 +51,5 @@ from twisted.internet import reactor
 
 if __name__ == "__main__":
         chan = sys.argv[1]
-        reactor.connectTCP('irc.freenode.net', 6667, TralalaBotFactory('#' + chan))
+        reactor.connectTCP('irc.freenode.net', 6667, TralalaBotFactory('#' + chan, "ChannelRoadie"))
         reactor.run()
