@@ -3,6 +3,10 @@ Tralala IRC Bot
 A _very_ simple IRC bot written in Python using twisted.
 Work in progress. Expanded as needed. Input appreciated.
 
+Dependencies:
+Python 2
+twisted
+
 Inspired by and code cannibalized from:
 lala by Mineo: https://github.com/mineo/lala
 "Writing an Markov-Chain IRC Bot with Twisted and Python", tutorial by Eric Florenzano: http://eflorenzano.com/blog/2008/11/17/writing-markov-chain-irc-bot-twisted-and-python/
