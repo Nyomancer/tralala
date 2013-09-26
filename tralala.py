@@ -3,6 +3,9 @@
 from twisted.words.protocols import irc
 from twisted.internet import protocol
 
+
+
+
 class TralalaBot(irc.IRCClient):
     def _get_nickname(self):
         return self.factory.nickname
@@ -18,6 +21,8 @@ class TralalaBot(irc.IRCClient):
 
     def privmsg(self, user, channel, msg):
         print "%s: %s" % (user, msg,)
+        if msg == "teststring123":
+             self.msg(channel, "teststring456")
 
 
 class TralalaBotFactory(protocol.ClientFactory):
