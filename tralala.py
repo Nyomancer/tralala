@@ -8,7 +8,8 @@ import os
 class ConfigClass:
     
     def __init__(self):
-        self.nick = "TralalaTest"
+        #modify as needed
+        self.nick = "TralalaBot"
         self.owner = "owner"
         self.adminpw = "supersecretpassword"
         self.server = "irc.freenode.net"
@@ -16,6 +17,7 @@ class ConfigClass:
         self.channel = "#hetzner-azubis"
 
     #no getter-methods here. lets see how that works out...
+    #TODO: properties... how do they work?
 
 
 
@@ -59,6 +61,18 @@ class TralalaBot(irc.IRCClient):
     realname = nickname
     username = nickname
 
+    #processes triggers
+    def processTrigger(self, user, channel, message):
+        if message == "!test":
+            self.msg(channel, "triggertest")
+
+        elif message == "!version":
+            self.msg(channel, "%s %s" % (self.versionName, self.versionNum,))
+
+
+        elif message == "!info":
+            self.msg(channel, "%s %s\nGet your copy at: github.com/nyomancer/tralala\nWritten by nyo@nyo-node.net" % (self.versionName, self.versionNum,))
+
     #called after sucessfully signing on to the server.
     def signedOn(self):
         self.join(self.factory.channel)
@@ -80,7 +94,10 @@ class TralalaBot(irc.IRCClient):
             logMsg = "%s %s requested OP: granted" % ((user.split('!')[0]), channel,)
             logger.logStd(logMsg)
             self.mode(self.factory.channel, True, "o", None, conf.owner)
-
+        
+        #trigger hook
+        elif (msg[0] == "!"):
+            self.processTrigger(user, channel, msg)
 
 class TralalaBotFactory(protocol.ClientFactory):
     protocol = TralalaBot
@@ -105,9 +122,7 @@ import sys
 from twisted.internet import reactor
 
 if __name__ == "__main__":
-        #chan = sys.argv[1]
         conf = ConfigClass()
         logger = LoggerClass() #ffffuuuuuuu
-        #reactor.connectTCP('irc.freenode.net', 6667, TralalaBotFactory('#' + chan))
         reactor.connectTCP(conf.server, conf.port, TralalaBotFactory(conf.channel, conf.nick))
         reactor.run()
