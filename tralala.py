@@ -19,7 +19,7 @@ class ConfigClass:
         self.server = "irc.freenode.net"
         self.port = 6667
         self.channel = "#tralalabot"
-
+    
     #no getter-methods here. lets see how that works out...
     #TODO: properties... how do they work?
 
@@ -28,7 +28,7 @@ class LoggerClass:
 
         def __init__(self):
         #open logfiles here...
-        self.logfile = open("tralala.log", 'w')
+        self.logfile = open("tralala.log", 'a')
         self.logfile.write("[STD]: " + datetime.strftime(datetime.now(), "%d.%m.%y - %H:%M:%S:%f: ") + "start logging\n")
         self.logfile.flush()
         os.fsync(self.logfile.fileno())
@@ -80,7 +80,7 @@ class TralalaBot(irc.IRCClient):
     
     #CTCP VERSION request details
     versionName = "TralalaBot"
-    versionNum = "0.1.0"
+    versionNum = "0.1.1"
     
     #gets nick from factory
     def _get_nickname(self):
