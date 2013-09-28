@@ -5,7 +5,10 @@ from twisted.internet import protocol
 from datetime import datetime
 import os
 import random
+import sys
+from twisted.internet import reactor
 
+#central configuration class
 class ConfigClass:
     
     def __init__(self):
@@ -15,21 +18,21 @@ class ConfigClass:
         self.adminpw = "supersecretpassword"
         self.server = "irc.freenode.net"
         self.port = 6667
-        self.channel = "#hetzner-azubis"
+        self.channel = "#tralalabot"
 
     #no getter-methods here. lets see how that works out...
     #TODO: properties... how do they work?
 
-
+#simple logging class
 class LoggerClass:
 
-    def __init__(self):
+        def __init__(self):
         #open logfiles here...
         self.logfile = open("tralala.log", 'w')
         self.logfile.write("[STD]: " + datetime.strftime(datetime.now(), "%d.%m.%y - %H:%M:%S:%f: ") + "start logging\n")
         self.logfile.flush()
         os.fsync(self.logfile.fileno())
-
+    
     def logStd(self, message):
         #pipe standard-type message to logfile
         self.logfile.write("[STD]: " + datetime.strftime(datetime.now(), "%d.%m.%y - %H:%M:%S:%f: ") + message + "\n")
@@ -44,6 +47,7 @@ class LoggerClass:
         os.fsync(self.logfile.fileno())
 
 
+#revolver class used in russian roulette
 class Revolver:
     def __init__(self):
         self.reload()
@@ -54,14 +58,17 @@ class Revolver:
         return "Can't you see I'm reloading?"
 
     def shoot(self, user):
+        #empty chamber
         if (self.chamber >= 5) and (self.chamber != self.bullet):
             textOut = "%s: Chamber %s of 6: *click*\nReloading" % (user, self.chamber)
             self.reload()
             
+        #you "found" the bullet
         elif (self.chamber == self.bullet):
             textOut = "%s: Chamber %s of 6: BOOM\nReloading" % (user, self.chamber)
             self.reload()
             
+        #bullet in last chamber, restart game
         else:
             textOut = "%s: Chamber %s of 6: *click*" % (user, self.chamber)
             self.chamber += 1
@@ -86,10 +93,7 @@ class TralalaBot(irc.IRCClient):
 
     #processes triggers
     def processTrigger(self, user, channel, message):
-        if message == "!test":
-            self.msg(channel, "triggertest")
-
-        elif message == "!version":
+        if message == "!version":
             self.msg(channel, "%s %s" % (self.versionName, self.versionNum,))
 
 
@@ -147,12 +151,10 @@ class TralalaBotFactory(protocol.ClientFactory):
 
 
 
-import sys
-from twisted.internet import reactor
 
 if __name__ == "__main__":
         conf = ConfigClass()
-        logger = LoggerClass() #ffffuuuuuuu
+        logger = LoggerClass()
         revolver = Revolver()
         reactor.connectTCP(conf.server, conf.port, TralalaBotFactory(conf.channel, conf.nick))
         reactor.run()
