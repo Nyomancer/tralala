@@ -2,23 +2,30 @@
 
 from twisted.words.protocols import irc
 from twisted.internet import protocol
-
+from datetime import datetime
+import os
 
 class LoggerClass:
 
     def __init__(self):
         #open logfiles here...
-        pass
+        self.logfile = open("tralala.log", 'w')
+        self.logfile.write("[STD]: " + datetime.strftime(datetime.now(), "%d.%m.%y - %H:%M:%S:%f: ") + "start logging\n")
+        self.logfile.flush()
+        os.fsync(self.logfile.fileno())
 
     def logStd(self, message):
         #pipe standard-type message to logfile
-        print "[STD]: " + "place timestamp here: " + message
+        self.logfile.write("[STD]: " + datetime.strftime(datetime.now(), "%d.%m.%y - %H:%M:%S:%f: ") + message + "\n")
         #yeah... i know...
+        self.logfile.flush()
+        os.fsync(self.logfile.fileno())
    
     def logErr(self, message):
         #pipe error-type message to logfile
-        print "[ERR]: " + "place timestamp here: " + message
-
+        self.logfile.write("[ERR]: " +  datetime.strftime(datetime.now(), "%d.%m.%y - %H:%M:%S:%f: ") + message + "\n")
+        self.logfile.flush()
+        os.fsync(self.logfile.fileno())
 
 
 class TralalaBot(irc.IRCClient):
@@ -39,16 +46,11 @@ class TralalaBot(irc.IRCClient):
     #called after sucessfully signing on to the server.
     def signedOn(self):
         self.join(self.factory.channel)
-        #TODO: pipe this to logger-object instead of stdout
-        #also TODO: build a gorram logger-class
-        #print "Signed on as %s." % (self.nickname,)
         logMsg = "Signed on as %s" % (self.nickname,)
         logger.logStd(logMsg)
 
     #called when I finish joining a channel
     def joined(self, channel):
-        #TODO: pipe this to logger-object instead of stdout
-        #print "Joined %s." % (channel,)
         logMsg = "Joined %s" % (channel,)
         logger.logStd(logMsg)
          
@@ -59,8 +61,6 @@ class TralalaBot(irc.IRCClient):
 
         #grants channelop to owner after sending the right "password" via query
         if (user.split('!')[0] == "chke") and (channel == self.nickname) and (msg == "opmefaggot"):
-            #TODO: pipe this to logger-object instead of stdout
-            #print "%s %s requested OP: granted" % ((user.split('!')[0]), channel,)
             logMsg = "%s %s requested OP: granted" % ((user.split('!')[0]), channel,)
             logger.logStd(logMsg)
             self.mode(self.factory.channel, True, "o", None, "chke")
@@ -75,15 +75,11 @@ class TralalaBotFactory(protocol.ClientFactory):
 
 
     def clientConnectionLost(self, connector, reason):
-        #TODO: pipe this to logger-object instead of stdout
-        #print "Lost connection (%s), reconnecting." % (reason,)
         logMsg = "Lost connection (%s), reconnecting." % (reason,)
         logger.logErr(logMsg)
         connector.connect()
 
     def clientConnectionFailed(self, connector, reason):
-        #TODO: pipe this to logger-object instead of stdout
-        #print "Could not connect: %s" % (reason,)
         logMsg = "Could not connect: %s" % (reason,)
         logger.logErr(logMsg)
 
