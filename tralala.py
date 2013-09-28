@@ -4,6 +4,7 @@ from twisted.words.protocols import irc
 from twisted.internet import protocol
 from datetime import datetime
 import os
+import random
 
 class ConfigClass:
     
@@ -18,9 +19,6 @@ class ConfigClass:
 
     #no getter-methods here. lets see how that works out...
     #TODO: properties... how do they work?
-
-
-
 
 
 class LoggerClass:
@@ -44,6 +42,31 @@ class LoggerClass:
         self.logfile.write("[ERR]: " +  datetime.strftime(datetime.now(), "%d.%m.%y - %H:%M:%S:%f: ") + message + "\n")
         self.logfile.flush()
         os.fsync(self.logfile.fileno())
+
+
+class Revolver:
+    def __init__(self):
+        self.reload()
+
+    def reload(self):
+        self.bullet = random.randint(1,6)
+        self.chamber = 1
+        return "Can't you see I'm reloading?"
+
+    def shoot(self, user):
+        if (self.chamber >= 5) and (self.chamber != self.bullet):
+            textOut = "%s: Chamber %s of 6: *click*\nReloading" % (user, self.chamber)
+            self.reload()
+            
+        elif (self.chamber == self.bullet):
+            textOut = "%s: Chamber %s of 6: BOOM\nReloading" % (user, self.chamber)
+            self.reload()
+            
+        else:
+            textOut = "%s: Chamber %s of 6: *click*" % (user, self.chamber)
+            self.chamber += 1
+
+        return textOut
 
 
 class TralalaBot(irc.IRCClient):
@@ -72,6 +95,12 @@ class TralalaBot(irc.IRCClient):
 
         elif message == "!info":
             self.msg(channel, "%s %s\nGet your copy at: github.com/nyomancer/tralala\nWritten by nyo@nyo-node.net" % (self.versionName, self.versionNum,))
+
+        elif message == "!reload":
+            self.msg(channel, "%s" % (revolver.reload()))
+
+        elif message == "!shoot":
+            self.msg(channel, "%s" % (revolver.shoot(user.split('!')[0])))
 
     #called after sucessfully signing on to the server.
     def signedOn(self):
@@ -124,5 +153,6 @@ from twisted.internet import reactor
 if __name__ == "__main__":
         conf = ConfigClass()
         logger = LoggerClass() #ffffuuuuuuu
+        revolver = Revolver()
         reactor.connectTCP(conf.server, conf.port, TralalaBotFactory(conf.channel, conf.nick))
         reactor.run()
