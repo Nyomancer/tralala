@@ -26,7 +26,7 @@ class ConfigClass:
 #simple logging class
 class LoggerClass:
 
-        def __init__(self):
+    def __init__(self):
         #open logfiles here...
         self.logfile = open("tralala.log", 'a')
         self.logfile.write("[STD]: " + datetime.strftime(datetime.now(), "%d.%m.%y - %H:%M:%S:%f: ") + "start logging\n")
