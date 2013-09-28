@@ -5,6 +5,22 @@ from twisted.internet import protocol
 from datetime import datetime
 import os
 
+class ConfigClass:
+    
+    def __init__(self):
+        self.nick = "TralalaTest"
+        self.owner = "owner"
+        self.adminpw = "supersecretpassword"
+        self.server = "irc.freenode.net"
+        self.port = 6667
+        self.channel = "#hetzner-azubis"
+
+    #no getter-methods here. lets see how that works out...
+
+
+
+
+
 class LoggerClass:
 
     def __init__(self):
@@ -60,10 +76,10 @@ class TralalaBot(irc.IRCClient):
         #TODO: build a backlog feature
 
         #grants channelop to owner after sending the right "password" via query
-        if (user.split('!')[0] == "chke") and (channel == self.nickname) and (msg == "opmefaggot"):
+        if (user.split('!')[0] == conf.owner) and (channel == self.nickname) and (msg == conf.adminpw):
             logMsg = "%s %s requested OP: granted" % ((user.split('!')[0]), channel,)
             logger.logStd(logMsg)
-            self.mode(self.factory.channel, True, "o", None, "chke")
+            self.mode(self.factory.channel, True, "o", None, conf.owner)
 
 
 class TralalaBotFactory(protocol.ClientFactory):
@@ -89,7 +105,9 @@ import sys
 from twisted.internet import reactor
 
 if __name__ == "__main__":
-        chan = sys.argv[1]
+        #chan = sys.argv[1]
+        conf = ConfigClass()
         logger = LoggerClass() #ffffuuuuuuu
-        reactor.connectTCP('irc.freenode.net', 6667, TralalaBotFactory('#' + chan))
+        #reactor.connectTCP('irc.freenode.net', 6667, TralalaBotFactory('#' + chan))
+        reactor.connectTCP(conf.server, conf.port, TralalaBotFactory(conf.channel, conf.nick))
         reactor.run()
