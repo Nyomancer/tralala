@@ -80,7 +80,7 @@ class TralalaBot(irc.IRCClient):
     
     #CTCP VERSION request details
     versionName = "TralalaBot"
-    versionNum = "0.1.1"
+    versionNum = "0.1.2"
     
     #gets nick from factory
     def _get_nickname(self):
