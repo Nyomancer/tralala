@@ -98,7 +98,7 @@ class TralalaBot(irc.IRCClient):
     
     #CTCP VERSION request details
     versionName = "TralalaBot"
-    versionNum = "0.2.3"
+    versionNum = "0.2.4"
     
     #gets nick from factory
     def _get_nickname(self):
@@ -121,6 +121,7 @@ class TralalaBot(irc.IRCClient):
         elif message == "!last":
             for x in backlog.printBacklog():
                 self.msg(user.split('!')[0], x)
+                sleep(0.5)
 
         elif message == "!reload":
             self.msg(channel, "%s" % (revolver.reload()))
