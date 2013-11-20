@@ -8,12 +8,15 @@ import random
 import sys
 from twisted.internet import reactor
 
+#for backlog
+import collections
+
 #central configuration class
 class ConfigClass:
     
     def __init__(self):
         #modify as needed
-        self.nick = "TralalaBot"
+        self.nick = "TralalaBot2"
         self.owner = "owner"
         self.adminpw = "supersecretpassword"
         self.server = "irc.freenode.net"
@@ -67,7 +70,7 @@ class Revolver:
         elif (self.chamber == self.bullet):
             textOut = "%s: Chamber %s of 6: BOOM\nReloading" % (user, self.chamber)
             self.reload()
-            
+
         #bullet in last chamber, restart game
         else:
             textOut = "%s: Chamber %s of 6: *click*" % (user, self.chamber)
@@ -76,11 +79,26 @@ class Revolver:
         return textOut
 
 
+#backlog class used for... backlog...
+class BacklogClass:
+    def __init__(self):
+        self.backlogLength = 30
+        self.backlog = collections.deque([], self.backlogLength)
+
+    def appendBacklog(self, message):
+        self.backlog.append(message)
+
+    def printBacklog(self):
+        returnList = []
+        for x in self.backlog:
+            returnList.append("%s\n" % (x))
+        return returnList
+
 class TralalaBot(irc.IRCClient):
     
     #CTCP VERSION request details
     versionName = "TralalaBot"
-    versionNum = "0.1.2"
+    versionNum = "0.2.3"
     
     #gets nick from factory
     def _get_nickname(self):
@@ -99,6 +117,10 @@ class TralalaBot(irc.IRCClient):
 
         elif message == "!info":
             self.msg(channel, "%s %s\nGet your copy at: github.com/nyomancer/tralala\nWritten by nyo@nyo-node.net" % (self.versionName, self.versionNum,))
+
+        elif message == "!last":
+            for x in backlog.printBacklog():
+                self.msg(user.split('!')[0], x)
 
         elif message == "!reload":
             self.msg(channel, "%s" % (revolver.reload()))
@@ -121,6 +143,9 @@ class TralalaBot(irc.IRCClient):
     def privmsg(self, user, channel, msg):
 
         #TODO: build a backlog feature
+        if channel == conf.channel:
+            backlog.appendBacklog("%s: %s" % (user.split('!')[0], msg))
+
 
         #grants channelop to owner after sending the right "password" via query
         if (user.split('!')[0] == conf.owner) and (channel == self.nickname) and (msg == conf.adminpw):
@@ -155,6 +180,7 @@ class TralalaBotFactory(protocol.ClientFactory):
 if __name__ == "__main__":
         conf = ConfigClass()
         logger = LoggerClass()
+        backlog = BacklogClass()
         revolver = Revolver()
         reactor.connectTCP(conf.server, conf.port, TralalaBotFactory(conf.channel, conf.nick))
         reactor.run()
