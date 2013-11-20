@@ -122,7 +122,7 @@ class TralalaBot(irc.IRCClient):
         elif message == "!last":
             for x in backlog.printBacklog():
                 self.msg(user.split('!')[0], x)
-                sleep(0.5)
+                time.sleep(0.5)
 
         elif message == "!reload":
             self.msg(channel, "%s" % (revolver.reload()))
