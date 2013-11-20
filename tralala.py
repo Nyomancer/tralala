@@ -17,7 +17,7 @@ class ConfigClass:
     
     def __init__(self):
         #modify as needed
-        self.nick = "TralalaBot2"
+        self.nick = "TralalaBot"
         self.owner = "owner"
         self.adminpw = "supersecretpassword"
         self.server = "irc.freenode.net"
@@ -99,7 +99,7 @@ class TralalaBot(irc.IRCClient):
     
     #CTCP VERSION request details
     versionName = "TralalaBot"
-    versionNum = "0.2.4"
+    versionNum = "0.2.5"
     
     #gets nick from factory
     def _get_nickname(self):
@@ -144,7 +144,7 @@ class TralalaBot(irc.IRCClient):
     #called when I have a message from a user to me or a channel
     def privmsg(self, user, channel, msg):
 
-        #TODO: build a backlog feature
+        #backlog
         if channel == conf.channel:
             backlog.appendBacklog("%s: %s" % (user.split('!')[0], msg))
 
