@@ -9,8 +9,6 @@ import random
 import sys
 from twisted.internet import reactor
 
-#for backlog
-import collections
 
 #central configuration class
 class ConfigClass:
@@ -84,7 +82,7 @@ class TralalaBot(irc.IRCClient):
     
     #CTCP VERSION request details
     versionName = "TralalaBot"
-    versionNum = "0.2.5"
+    versionNum = "0.2.6"
     
     #gets nick from factory
     def _get_nickname(self):
@@ -97,7 +95,7 @@ class TralalaBot(irc.IRCClient):
 
     #set backlog options
     backlogLength = 30
-    backlog = collections.deque([], backlogLength)
+    backlog = []
 
     #processes triggers
     def processTrigger(self, user, channel, message):
@@ -119,9 +117,11 @@ class TralalaBot(irc.IRCClient):
         elif message == "!shoot":
             self.msg(channel, "%s" % (revolver.shoot(user.split('!')[0])))
 
-    #append to backlog - legacy
+    #append to backlog - suddenly not so legacy
     #TODO: make this work and make this pretty
     def appendBacklog(self, message):
+        if len(self.backlog) == self.backlog.Length:
+            self.backlog = self.backlog[1:]
         self.backlog.append(message)
 
     
