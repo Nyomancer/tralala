@@ -21,7 +21,7 @@ class ConfigClass:
         self.owner = "owner"
         self.adminpw = "supersecretpassword"
         self.server = "irc.freenode.net"
-        self.port = 6667
+        self.port = 6666
         self.channel = "#tralalabot"
     
     #no getter-methods here. lets see how that works out...
@@ -96,8 +96,8 @@ class TralalaBot(irc.IRCClient):
     username = nickname
 
     #set backlog options
-    self.backlogLength = 30
-    self.backlog = collections.deque([], self.backlogLength)
+    backlogLength = 30
+    backlog = collections.deque([], backlogLength)
 
     #processes triggers
     def processTrigger(self, user, channel, message):
@@ -109,7 +109,7 @@ class TralalaBot(irc.IRCClient):
             self.msg(channel, "%s %s\nGet your copy at: github.com/nyomancer/tralala\nWritten by nyo@nyo-node.net" % (self.versionName, self.versionNum,))
 
         elif message == "!last":
-            for x in self.backlog
+            for x in self.backlog:
                 self.msg(user.split('!')[0], x)
                 time.sleep(0.5)
 
@@ -139,9 +139,9 @@ class TralalaBot(irc.IRCClient):
     #called when I have a message from a user to me or a channel
     def privmsg(self, user, channel, msg):
 
-        #backlog
+        #append "user: message" to backlog
         if channel == conf.channel:
-            backlog.append("%s: %s" % (user.split('!')[0], msg))
+            self.backlog.append("%s: %s" % (user.split('!')[0], msg))
 
 
         #grants channelop to owner after sending the right "password" via query
@@ -177,7 +177,6 @@ class TralalaBotFactory(protocol.ClientFactory):
 if __name__ == "__main__":
         conf = ConfigClass()
         logger = LoggerClass()
-        backlog = BacklogClass()
         revolver = Revolver()
         reactor.connectTCP(conf.server, conf.port, TralalaBotFactory(conf.channel, conf.nick))
         reactor.run()
