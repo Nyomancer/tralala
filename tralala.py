@@ -80,21 +80,6 @@ class Revolver:
         return textOut
 
 
-#backlog class used for... backlog...
-class BacklogClass:
-    def __init__(self):
-        self.backlogLength = 30
-        self.backlog = collections.deque([], self.backlogLength)
-
-    def appendBacklog(self, message):
-        self.backlog.append(message)
-
-    def printBacklog(self):
-        returnList = []
-        for x in self.backlog:
-            returnList.append("%s\n" % (x))
-        return returnList
-
 class TralalaBot(irc.IRCClient):
     
     #CTCP VERSION request details
@@ -110,6 +95,10 @@ class TralalaBot(irc.IRCClient):
     realname = nickname
     username = nickname
 
+    #set backlog options
+    self.backlogLength = 30
+    self.backlog = collections.deque([], self.backlogLength)
+
     #processes triggers
     def processTrigger(self, user, channel, message):
         if message == "!version":
@@ -120,7 +109,7 @@ class TralalaBot(irc.IRCClient):
             self.msg(channel, "%s %s\nGet your copy at: github.com/nyomancer/tralala\nWritten by nyo@nyo-node.net" % (self.versionName, self.versionNum,))
 
         elif message == "!last":
-            for x in backlog.printBacklog():
+            for x in self.backlog
                 self.msg(user.split('!')[0], x)
                 time.sleep(0.5)
 
@@ -130,6 +119,12 @@ class TralalaBot(irc.IRCClient):
         elif message == "!shoot":
             self.msg(channel, "%s" % (revolver.shoot(user.split('!')[0])))
 
+    #append to backlog - legacy
+    #TODO: make this work and make this pretty
+    def appendBacklog(self, message):
+        self.backlog.append(message)
+
+    
     #called after sucessfully signing on to the server.
     def signedOn(self):
         self.join(self.factory.channel)
@@ -146,7 +141,7 @@ class TralalaBot(irc.IRCClient):
 
         #backlog
         if channel == conf.channel:
-            backlog.appendBacklog("%s: %s" % (user.split('!')[0], msg))
+            backlog.append("%s: %s" % (user.split('!')[0], msg))
 
 
         #grants channelop to owner after sending the right "password" via query
